@@ -1,0 +1,71 @@
+{
+    "name": "${environmentName}",
+    "description": "Subutai Jenkins",
+    "version": "1.0.0",
+    "author": "https://github.com/absidish/subutai-jenkins",
+    "containers": [
+        {
+            "hostname": "${containerName}",
+            "template": "debian-stretch",
+            "peer-criteria": "PEER-GROUP",
+            "size": "${containerSize}",
+                "port-mapping": [
+                {
+                    "protocol": "https",
+                    "domain": "${domainName}",
+                    "internal-port": "8080",
+                    "external-port": "443"
+                }
+            ]
+        }
+    ],
+    "peer-criteria": [
+        {
+            "name": "PEER-GROUP"
+        }
+    ],
+    "ansible-configuration": {
+        "source-url": "https://github.com/absidish/subutai-jenkins/archive/master.zip",
+        "ansible-playbook": "main.yml",
+        "extra-vars": [
+            { 
+                 "key" :"domain",
+                 "value": "${domainName}" 
+            }
+           ],
+        "groups": [
+            {
+                "name": "jenkins",
+                "hostnames": [
+                    "${containerName}"
+                ]
+            }
+        ]
+    },
+    "user-variables": {
+        "environmentName": {
+            "description": "Enter the environment name",
+            "type": "string",
+            "default": "Elasticsearch",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "containerName": {
+            "description": "Enter the container's hostname",
+            "type": "string",
+            "default": "elasticsearch",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "containerSize": {
+            "description": "Container Size",
+            "type": "enum",
+            "default": "LARGE",
+            "validation": "SMALL,MEDIUM,LARGE,HUGE"
+        },
+        "domainName": {
+            "description": "Enter the application domain name",
+            "type": "domain",
+            "default": "change.the.domain",
+            "validation": "[a-zA-Z0-9]+"
+        }
+    }
+}
