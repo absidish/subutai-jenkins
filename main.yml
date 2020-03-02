@@ -1,0 +1,46 @@
+---
+
+- name: run the playbook tasks on the localhost
+  hosts: 127.0.0.1
+  connection: local
+  become: yes
+  tasks:
+  - name: install elasticsearch role
+    shell: ansible-galaxy install geerlingguy.jenkins
+
+
+- hosts: jenkins
+  gather_facts: false
+  remote_user: root
+  tasks:
+
+    - name: Disable dpkg fsync
+      shell: echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/unsafe-io
+      args:
+        creates: /etc/dpkg/dpkg.cfg.d/unsafe-io
+
+    - name: Upgrade debian
+      apt:
+        update_cache: true
+        upgrade: true
+
+
+    - name: Install setup tools
+      apt:
+        name: "{{ item }}"
+        allow_unauthenticated: yes
+      with_items:
+        - locales-all
+        - locales
+
+
+    - name: Execute locales_setup.sh
+      command: update-locale LANG=en_US.utf8
+
+
+- hosts: jenkins
+  vars:
+    jenkins_hostname: {{domain}}
+  roles:
+    - role: geerlingguy.jenkins
+      become: yes
