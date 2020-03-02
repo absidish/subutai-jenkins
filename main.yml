@@ -40,7 +40,7 @@
 
 - hosts: jenkins
   vars:
-    jenkins_hostname: {{domain}}
+    jenkins_hostname: '{{ domain }}'
   roles:
     - role: geerlingguy.jenkins
       become: yes
